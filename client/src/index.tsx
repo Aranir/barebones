@@ -4,8 +4,6 @@ import * as ReactDOM from 'react-dom';
 import { AppContainer } from 'react-hot-loader';
 import App from './App';
 import './index.css';
-// import {store} from './CouldronStore';
-// import {Provider} from 'react-redux';
 import ApolloClient, { createNetworkInterface } from 'apollo-client';
 import ApolloProvider from "react-apollo/lib/ApolloProvider";
 
