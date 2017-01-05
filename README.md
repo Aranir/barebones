@@ -16,4 +16,19 @@ This repository is by no means polished or in a state to be recommended for anyo
 
 
 
+##Client
+
+start the client from the `./client` directory with:
+
+```
+npm start
+```
+
+##Server
+
+start the server from the `./server` directory
+
+```
+gulp
+```
 
