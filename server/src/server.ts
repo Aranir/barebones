@@ -1,21 +1,19 @@
-///<reference path="data/schema.ts"/>
 
 import * as  express from 'express'
 import * as cors from 'cors'
-// import {buildSchema} from "graphql";
-// import resolveFunctions from "./src.data/resolvers";
-// import {Author} from "./src.data/connectors";
-
-
-// import { graphqlConnect, graphiqlConnect } from 'graphql-server-express';
-
 import * as bodyParser from "body-parser";
 import {graphqlExpress, graphiqlExpress} from "graphql-server-express";
-// import {GraphQLSchema} from "graphql/type/schema";
-// import {makeExecutableSchema} from "graphql-tools";
-import { GraphQLOptions } from 'graphql-server-core';
 import {schema} from "./data/schema";
+import * as _ from 'lodash'
+import "reflect-metadata";
+import {createConnection} from "typeorm";
+import {Post} from "./entities/Post";
+import {Author} from "./entities/Author";
+import {ConnectionManager} from "typeorm";
+import {Container} from "typedi";
+import {Chance} from 'chance';
 
+let chance = new Chance();
 
 var whitelist = [
     'http://localhost:3000',
@@ -29,6 +27,49 @@ var corsOptions = {
 };
 
 
+
+
+
+const connectionManager = Container.get(ConnectionManager);
+
+
+connectionManager.createAndConnect({
+    driver: {
+      type: "postgres",
+      host: "localhost",
+      port: 5432,
+      username: "root",
+      password: "root",
+      database: "foodOrder"
+    },
+    entities: [
+        Author,
+        Post
+    ],
+    autoSchemaSync: true,
+    dropSchemaOnConnection: true
+}).then(connection => {
+    // here you can start to work with your entities
+    _.times(10, () => {
+        let author = new Author();
+        author.firstName = chance.first();
+        author.lastName = chance.last();
+
+        let post = new Post();
+        post.author = author;
+        post.title = `A post by ${author.firstName} ${author.lastName}`;
+        post.text = chance.paragraph();
+        post.tags = chance.word();
+        author.posts.push(post);
+
+        let authorRepo = connection.getRepository(Author);
+
+        authorRepo.persist(author).catch(reason =>{
+            console.log("Failed: ", reason)
+        });
+    });
+}).catch(error => console.log(error));
+
 const GRAPHQL_PORT = 4000;
 
 
@@ -38,7 +79,7 @@ graphQLServer.use(cors(corsOptions));
 
 
 graphQLServer.use('/graphql', bodyParser.json(), graphqlExpress({
-    schema: schema,
+    schema: schema(),
     context: {},
 }));
 
@@ -52,38 +93,7 @@ graphQLServer.listen(GRAPHQL_PORT, () => console.log(
 ));
 
 
-// // Construct a schema, using GraphQL schema language
-// var schema = buildSchema(`
-//   type Query {
-//     hello: String
-//   }
-// `);
-//
-// // The root provides a resolver function for each API endpoint
-// // var root = {
-// //     hello: () => {
-// //         return 'Hello world!';
-// //     },
-// // };
-//
-// let root = {
-//     author: () => {
-//         return {firstName: "Roger", lastName: "King"}
-//     }
-// };
-//
-// Author.findAll().map((a: Author) => {
-//     console.log(`We found ${a.firstName} ${a.lastName}`);
-// });
-//
-// let app = express();
-// app.use('/graphql', graphqlHTTP({
-//     schema: Schema,
-//     rootValue: resolveFunctions,
-//     graphiql: true,
-// }));
-// app.listen(4000);
-// console.log('Running a GraphQL API server at localhost:4000/graphql');
+
 
 
 
