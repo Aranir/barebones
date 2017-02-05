@@ -12,6 +12,7 @@ var backendConfig = {
     output: {
         filename: 'dist/bundle.js'
     },
+    devtool: 'source-map',
     resolve: {
         // Add `.ts` and `.tsx` as a resolvable extension.
         extensions: ['', '.webpack.js', '.web.js', '.ts', '.tsx', '.js']
@@ -30,7 +31,11 @@ var backendConfig = {
                 loader: 'graphql-tag/loader'
             }
         ]
-    }
+    },
+    plugins: [
+        new webpack.BannerPlugin('require("source-map-support").install();',
+            { raw: true, entryOnly: false })
+    ],
 };
 
 function onBuild(done) {

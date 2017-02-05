@@ -2,6 +2,9 @@ import {Chance} from 'chance'
 import {Connection} from "typeorm";
 import {Author} from "../entities/Author";
 import {Post} from "../entities/Post";
+import * as jwt from "jsonwebtoken"
+import {isUndefined} from "util";
+import {isNullOrUndefined} from "util";
 
 const chance = new Chance();
 
@@ -9,8 +12,31 @@ const chance = new Chance();
 export function resolvers(connection: Connection) {
   return {
     Query: {
-      authors() {
-        return connection.getRepository(Author).find();
+      loggedInAuthor(root, args, context) {
+        let {user}: {user: Author} = context;
+        if (user) {
+          return connection.getRepository(Author)
+            .createQueryBuilder('authors')
+            .where('authors.firstName ILIKE :author', {author: user.firstName})
+            .getOne();
+        } else {
+          return null;
+        }
+
+      },
+      authors(obj, args, context, info) {
+        let {user}: {user: Author} = context;
+        console.log("we query authors with", user);
+        // return [new Author()];
+        if (user) {
+          console.log("returning all");
+          return connection.getRepository(Author)
+            .createQueryBuilder('authors')
+            .where('authors.firstName ILIKE :author', {author: user.firstName})
+            .getMany();
+        } else {
+          return connection.getRepository(Author).find();
+        }
       },
       author(root, {firstName, lastName}){
         let where: {firstName?: string, lastName?: string};
@@ -56,7 +82,6 @@ export function resolvers(connection: Connection) {
         return connection.getRepository(Author).persist(author);
       },
       createPost: (root, {authorId, tags, title, text}) => {
-
         return connection.getRepository(Author).findOneById(authorId).then(author => {
           let post = new Post();
           post.author = author;
@@ -66,6 +91,16 @@ export function resolvers(connection: Connection) {
           return connection.getRepository(Post).persist(post);
 
         })
+      },
+      createToken: (username: string, password: string) => {
+        let expiresAt = Date.now() + (1000 * 60 * 60);
+        let token = jwt.sign(
+          {username: username,
+            password: password},
+          'cat_litter',
+          { expiresIn: '1h'}
+        )
+        return {token: token, expiresAt: expiresAt, error: null}
       }
 
     },

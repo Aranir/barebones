@@ -31,13 +31,22 @@ const typeDefinition = gql`
     # the schema allows the following query:
     type Query {
         author(firstName: String, lastName: String): Author
+        loggedInAuthor: Author
         authors: [Author]
         posts: [Post]
 
     }
+    
+    type Token {
+        token: String
+        expriesAt: Int
+        error: String
+    }
+    
     type Mutation {
         createAuthor(firstName: String!, lastName: String!): Author
         createPost(authorId: Int!, title: String!, text: String!, tags: [String]): Post
+        createToken(username: String!, password: String!): Token
     }
 
     schema {

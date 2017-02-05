@@ -222,6 +222,7 @@ function addMiddleware(devServer) {
 
 function runDevServer(host, port, protocol) {
   var devServer = devMiddleware(compiler, {
+
     // Enable gzip compression of generated files.
     compress: true,
     // Silence WebpackDevServer's own logs since they're generally not useful.

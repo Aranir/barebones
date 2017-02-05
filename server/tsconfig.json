@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "target": "es5",
+    "target": "es6",
     "module": "commonjs",
     "moduleResolution": "node",
     "sourceMap": true,
@@ -12,6 +12,11 @@
       "node_modules/@types"
     ]
   },
+  "include": [
+    "src/**/*",
+    "src/*",
+    "../shared/**/*"
+  ],
   "exclude": [
     "node_modules"
   ]

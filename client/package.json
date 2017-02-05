@@ -41,8 +41,10 @@
     "whatwg-fetch": "1.0.0"
   },
   "dependencies": {
+    "@types/axios": "^0.9.36",
     "@types/immutable": "^3.8.7",
     "@types/jest": "^16.0.2",
+    "@types/jquery": "^2.0.40",
     "@types/node": "^6.0.55",
     "@types/react": "^0.14.55",
     "@types/react-bootstrap": "^0.0.37",
@@ -52,9 +54,11 @@
     "@types/redux": "^3.6.0",
     "apollo": "^0.2.2",
     "apollo-client": "^0.8.1",
+    "axios": "^0.15.3",
     "express": "^4.14.0",
     "graphql-tag": "^1.2.4",
     "immutable": "^3.8.1",
+    "jquery": "^3.1.1",
     "react": "^15.4.1",
     "react-apollo": "^0.9.0",
     "react-bootstrap": "^0.30.7",
@@ -99,5 +103,6 @@
       "js"
     ],
     "testRegex": "(/__tests__/.*|\\.(test|spec))\\.(ts|tsx|js)$"
-  }
+  },
+  "proxy": "localhost:4000"
 }
